@@ -7,17 +7,21 @@ x-logging:
     max-file: "10"
     max-size: "1M"
 
+x-icinga2-environment:
+  &icinga2-environment
+  ICINGA_CN: icinga2
+  ICINGA_MASTER: 1
+
 networks:
   default:
-    name: icinga
+    name: icinga-playground
 
 services:
   # The Icinga 2 docker image does not support configuration via env vars at the moment.
   # So, we have to ship some configs with this little init container. Referenced in depends_on of the icinga2 service.
   init-icinga2:
     command: [ "/config/init-icinga2.sh" ]
-    environment:
-      ICINGA_MASTER: 1
+    environment: *icinga2-environment
     image: icinga/icinga2
     logging: *default-logging
     volumes:
@@ -30,9 +34,8 @@ services:
     depends_on:
       - icingadb-redis
       - init-icinga2
-    environment:
-      ICINGA_MASTER: 1
-    image: icinga/icinga2
+    environment: *icinga2-environment
+    image: icinga/icinga2:latest
     logging: *default-logging
     ports:
       - 5665:5665
@@ -41,13 +44,11 @@ services:
 
   icingadb:
     environment:
-      ICINGADB_MYSQL_HOST: icingadb-mysql
-      ICINGADB_MYSQL_DATABASE: icingadb
-      ICINGADB_MYSQL_USER: icingadb
-      ICINGADB_MYSQL_PASSWORD: ${ICINGADB_MYSQL_PASSWORD:-icingadb}
-      ICINGADB_REDIS_HOST: icingadb-redis
-      # Icinga DB connects to Redis on port 6380 by default but we're using the Redis default port 6379 here.
-      ICINGADB_REDIS_PORT: 6379
+      ICINGADB_DATABASE_HOST: icingadb-mysql
+      ICINGADB_DATABASE_DATABASE: icingadb
+      ICINGADB_DATABASE_USER: icingadb
+      ICINGADB_DATABASE_PASSWORD: ${ICINGADB_MYSQL_PASSWORD:-icingadb}
+      ICINGADB_REDIS_ADDRESS: icingadb-redis:6379
     depends_on:
       - icingadb-mysql
       - icingadb-redis
@@ -82,7 +83,7 @@ services:
       icingaweb.config.global.config_backend: db
       icingaweb.config.global.config_resource: icingaweb-mysql
       icingaweb.config.logging.log: php
-      icingaweb.enabledModules: icingadb,ipl
+      icingaweb.enabledModules: icingadb
       icingaweb.groups.icingaweb2.backend: db
       icingaweb.groups.icingaweb2.resource: icingaweb-mysql
       icingaweb.modules.icingadb.config.icingadb.resource: icingadb
@@ -136,4 +137,5 @@ volumes:
   icinga2:
   icingadb-mysql:
   icingaweb:
+  icingaweb-modules:
   icingaweb-mysql:
