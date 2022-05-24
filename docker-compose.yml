@@ -140,13 +140,14 @@ services:
     logging: *default-logging
 
   icingaweb:
+    build:
+      context: ./env/icingaweb2
     depends_on:
       - mysql
     environment:
       icingaweb.enabledModules: director, icingadb, incubator
       <<: [*icinga-db-web-config, *icinga-director-config, *icinga-web-config]
     logging: *default-logging
-    image: icinga/icingaweb2
     ports:
       - 8080:8080
     # Restart Icinga Web container automatically since we have to wait for the database to be ready.
