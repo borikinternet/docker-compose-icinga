@@ -15,7 +15,7 @@ fi
 if [ ! -f /data/etc/icinga2/custom_config_included.flag ]; then
   cat >>/data/etc/icinga2/icinga2.conf <<EOF
 
-/**
+/** 
  * custom configuration files
  */
 include_recursive "/custom_data/custom.conf.d"
