@@ -142,8 +142,7 @@ services:
     logging: *default-logging
 
   icingaweb:
-    build:
-      context: ./env/icingaweb2
+    image: icinga/icingaweb2
     depends_on:
       - mysql
     environment:
