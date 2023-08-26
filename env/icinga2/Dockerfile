@@ -11,4 +11,6 @@ RUN apt update && \
       -o /usr/lib/nagios/plugins/check_sip2 && \
     chmod +x /usr/lib/nagios/plugins/check_sip2
 
+ADD nagios-mibs/* /usr/share/snmp/mibs/
+
 USER icinga
