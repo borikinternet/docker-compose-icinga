@@ -7,22 +7,22 @@ CRIT_LEVEL=$4
 
 VALUE=`/usr/bin/docker exec $CONTAINER /usr/sbin/kamcmd stats.get_statistics $STATISTIC | /bin/sed 's:.*=\s*\([0123456789]\+\):\1:g'`
 
-if [ $VALUE -z ];
+if [ $VALUE -z ]; then
   echo "UNKNOWN: no output statistic $STATISTIC"
   exit 3
 fi
 
-if [ $VALUE -lt $CRIT_LEVEL ];
+if [ $VALUE -lt $CRIT_LEVEL ]; then
   echo "CRITICAL: statistic $STATISTIC below critical level: $VALUE"
   exit 2
 fi
 
-if [ $VALUE -lt $WARN_LEVEL ];
+if [ $VALUE -lt $WARN_LEVEL ]; then
   echo "WARNING: statistic $STATISTIC below warning level: $VALUE"
   exit 1
 fi
 
-if [ $VALUE -ge $WARN_LEVEL ];
+if [ $VALUE -ge $WARN_LEVEL ]; then
   echo "OK: statistic $STATISTIC above warning level: $VALUE"
   exit 0
 fi
