@@ -112,15 +112,16 @@ services:
       - icingadb-redis
       - init-icinga2
     environment: *icinga2-environment
-#    image: icinga/icinga2:latest
-    build:
-      context: env/icinga2
+    image: docker-compose-icinga-icinga2
+#    build:
+#      context: env/icinga2
     logging: *default-logging
     ports:
       - 5665:5665
     volumes:
       - icinga2:/data
       - ./icinga2.conf.d:/custom_data/custom.conf.d
+    restart: on-failure
 
   icingadb:
     environment:
@@ -136,10 +137,12 @@ services:
       - icingadb-redis
     image: icinga/icingadb
     logging: *default-logging
+    restart: on-failure
 
   icingadb-redis:
     image: redis
     logging: *default-logging
+    restart: on-failure
 
   icingaweb:
     image: icinga/icingaweb2
@@ -166,6 +169,7 @@ services:
       ICINGAWEB_MYSQL_PASSWORD: ${ICINGAWEB_MYSQL_PASSWORD:-icingaweb}
       ICINGA_DIRECTOR_MYSQL_PASSWORD: ${ICINGA_DIRECTOR_MYSQL_PASSWORD:-director}
     logging: *default-logging
+    restart: on-failure
     volumes:
       - mysql:/var/lib/mysql
       - ./env/mysql/:/docker-entrypoint-initdb.d/

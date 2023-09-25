@@ -19,3 +19,4 @@ services:
       ICINGA_ENDPOINT: icinga2,$ICINGA_MASTER_ADDR,5665
     logging: *default-logging
     network_mode: "host"
+    restart: on-failure
