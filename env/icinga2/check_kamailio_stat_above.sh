@@ -7,7 +7,7 @@ CRIT_LEVEL=$4
 
 VALUE=`/usr/bin/docker exec $CONTAINER /usr/sbin/kamcmd stats.get_statistics $STATISTIC | /bin/sed 's:.*=\s*\([0123456789]\+\):\1:g'`
 
-if [ $VALUE -z ]; then
+if [ -z "$VALUE" ]; then
   echo "UNKNOWN: no output statistic $STATISTIC"
   exit 3
 fi
