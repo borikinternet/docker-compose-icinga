@@ -89,13 +89,13 @@ class DiameterChecker:
     origin_host_avp = pyDiaAVPTypes.DiaAVPStr()
     origin_host_avp.setAVPCode(264)
     origin_host_avp.setAVPMandatoryFlag()
-    origin_host_avp.setAVPValue(origin_host_name)
+    origin_host_avp.setAVPValue(str.encode(origin_host_name))
     self.message.addAVPByPath(root_avp_path, origin_host_avp)
 
     origin_realm = pyDiaAVPTypes.DiaAVPStr()
     origin_realm.setAVPCode(296)
     origin_realm.setAVPMandatoryFlag()
-    origin_realm.setAVPValue(args.realm)
+    origin_realm.setAVPValue(str.encode(args.realm))
     self.message.addAVPByPath(root_avp_path, origin_realm)
 
     host_ip_address = pyDiaAVPTypes.DiaAVPStr()
@@ -111,7 +111,7 @@ class DiameterChecker:
 
     product_name = pyDiaAVPTypes.DiaAVPStr()
     product_name.setAVPCode(269)
-    product_name.setAVPValue("NAGIOS-CheckDiameter-Plugin")
+    product_name.setAVPValue(str.encode("NAGIOS-CheckDiameter-Plugin"))
     self.message.addAVPByPath(root_avp_path, product_name)
 
     random.seed()
@@ -165,10 +165,13 @@ class DiameterChecker:
       while buf_len < pyDiaMessageConst.MSG_HEADER_BUFF_LEN:
         buf += self.connection_socket.recv(pyDiaMessageConst.MSG_HEADER_BUFF_LEN - buf_len)
         buf_len = len(buf)
-      msg_len = pyDiaMessage.DiaMessage.decodeUIntValue(buf[1:3])
-      while buf_len < msg_len:
+      msg_len = pyDiaMessage.DiaMessage.decodeUIntValue(buf[1:4])
+      old_buf_len = -1
+      while buf_len < msg_len and old_buf_len != 0:
+        old_buf_len = buf_len
         buf += self.connection_socket.recv(msg_len - buf_len)
         buf_len = len(buf)
+        old_buf_len = buf_len - old_buf_len # use it to "catch" zero bytes read from socket situation
     except Exception:
       return -2, None  # exception while reading from socket
     message = pyDiaMessage.DiaMessage()
@@ -178,7 +181,7 @@ class DiameterChecker:
     avps = message.getAVPs()
     for avp in avps:
       if avp.getAVPCode() == 268 and avp.getAVPVendor() == 0:
-        return avp.getAVPValue()
+        return avp.getAVPValue(), None
     return -1, message  # no Result-Code AVP found in answer
 
   def run(self) -> int:
