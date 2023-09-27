@@ -165,7 +165,7 @@ class DiameterChecker:
       while buf_len < pyDiaMessageConst.MSG_HEADER_BUFF_LEN:
         buf += self.connection_socket.recv(pyDiaMessageConst.MSG_HEADER_BUFF_LEN - buf_len)
         buf_len = len(buf)
-      msg_len = pyDiaMessage.DiaMessage.decodeUIntValue(buf[1:])
+      msg_len = pyDiaMessage.DiaMessage.decodeUIntValue(buf[1:3])
       while buf_len < msg_len:
         buf += self.connection_socket.recv(msg_len - buf_len)
         buf_len = len(buf)
