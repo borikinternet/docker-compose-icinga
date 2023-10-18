@@ -16,6 +16,6 @@ RUN apt update && \
     chmod +x /usr/lib/nagios/plugins/check_sip2 /usr/lib/nagios/plugins/check_diameter.py \
       /usr/lib/nagios/plugins/check_influxdb_query.py
 
-ADD nagios-mibs/* /usr/share/snmp/mibs/
+VOLUME /usr/share/snmp/mibs/
 
 USER icinga

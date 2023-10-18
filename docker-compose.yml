@@ -121,6 +121,7 @@ services:
     volumes:
       - icinga2:/data
       - ./icinga2.conf.d:/custom_data/custom.conf.d
+      - ./env/icinga2/nagios-mibs:/usr/share/snmp/mibs
     restart: on-failure
 
   icingadb:
